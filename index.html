@@ -1,0 +1,1755 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b10">
+<title>🏙️ Построй Империю</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#080b10;
+ color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+
+.app{
+ max-width:520px;
+ margin:auto;
+ min-height:100vh;
+ padding:14px 14px 40px
+}
+
+header{
+ background:linear-gradient(145deg,#182131,#0e131c);
+ border:1px solid #293548;
+ border-radius:26px;
+ padding:20px;
+ box-shadow:0 15px 45px #0008
+}
+
+.logo{
+ text-align:center;
+ user-select:none;
+ cursor:pointer
+}
+
+.logo h1{
+ margin:0;
+ font-size:27px
+}
+
+.sub{
+ color:#8793a7;
+ font-size:13px;
+ margin-top:5px
+}
+
+.user{
+ margin-top:14px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ background:#0a0e14;
+ padding:10px 12px;
+ border-radius:14px
+}
+
+.user span{
+ color:#9da9ba;
+ font-size:13px;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+ margin-top:15px
+}
+
+.stat{
+ background:#0b1017;
+ border-radius:16px;
+ padding:12px
+}
+
+.label{
+ font-size:11px;
+ color:#7e8a9e
+}
+
+.value{
+ font-size:20px;
+ font-weight:900;
+ margin-top:3px
+}
+
+.section{
+ font-size:19px;
+ font-weight:900;
+ margin:20px 4px 10px
+}
+
+.card{
+ background:#121821;
+ border:1px solid #263142;
+ border-radius:20px;
+ padding:14px;
+ margin-bottom:10px;
+ display:flex;
+ align-items:center;
+ gap:11px
+}
+
+.icon{
+ width:45px;
+ font-size:32px;
+ text-align:center
+}
+
+.info{
+ flex:1;
+ min-width:0
+}
+
+.name{
+ font-weight:900
+}
+
+.desc{
+ color:#818da0;
+ font-size:12px;
+ margin-top:3px
+}
+
+.income{
+ color:#62e69a;
+ font-size:13px;
+ margin-top:5px
+}
+
+button{
+ border:0;
+ border-radius:13px;
+ padding:11px 13px;
+ background:#fff;
+ color:#101319;
+ font-weight:900;
+ font-size:13px;
+ cursor:pointer
+}
+
+button:disabled{
+ opacity:.3
+}
+
+.secondary{
+ background:#222c3b;
+ color:#fff
+}
+
+.danger{
+ background:#c94150;
+ color:#fff
+}
+
+.green{
+ background:#247d52;
+ color:#fff
+}
+
+.modal{
+ position:fixed;
+ inset:0;
+ background:#000d;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ z-index:20
+}
+
+.box{
+ width:min(420px,100%);
+ max-height:90vh;
+ overflow:auto;
+ background:#141a23;
+ border:1px solid #303b4d;
+ border-radius:25px;
+ padding:22px;
+ box-shadow:0 20px 70px #000
+}
+
+input{
+ width:100%;
+ padding:14px;
+ border-radius:14px;
+ border:1px solid #394456;
+ background:#0a0e14;
+ color:white;
+ font-size:16px;
+ margin:8px 0;
+ outline:none
+}
+
+.error{
+ color:#ff7180;
+ font-size:13px;
+ min-height:20px;
+ margin:4px 0
+}
+
+.hidden{
+ display:none!important
+}
+
+.tabs{
+ display:flex;
+ gap:7px;
+ margin-bottom:12px
+}
+
+.tabs button{
+ flex:1;
+ background:#202a38;
+ color:#fff
+}
+
+.tabs button.active{
+ background:#fff;
+ color:#111
+}
+
+.rank{
+ background:#121821;
+ border:1px solid #263142;
+ border-radius:16px;
+ padding:13px;
+ margin-bottom:8px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px
+}
+
+.rank-left{
+ min-width:0
+}
+
+.rank-number{
+ font-size:18px;
+ font-weight:900
+}
+
+.rank-name{
+ margin-top:3px;
+ font-weight:800;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap
+}
+
+.rank-right{
+ text-align:right;
+ white-space:nowrap
+}
+
+.rank-level{
+ font-weight:900
+}
+
+.rank-xp{
+ color:#62e69a;
+ font-size:12px;
+ margin-top:2px
+}
+
+.admin{
+ position:fixed;
+ inset:0;
+ background:#05070bd9;
+ z-index:50;
+ padding:18px;
+ overflow:auto
+}
+
+.admin-box{
+ width:min(460px,100%);
+ margin:auto;
+ background:#141a23;
+ border:1px solid #354158;
+ border-radius:25px;
+ padding:20px;
+ box-shadow:0 20px 70px #000
+}
+
+.admin-title{
+ font-size:23px;
+ font-weight:900;
+ margin-bottom:5px
+}
+
+.admin-sub{
+ color:#7f8ca1;
+ font-size:12px;
+ margin-bottom:15px
+}
+
+.admin-row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+ margin:8px 0
+}
+
+.admin-row button{
+ background:#252f40;
+ color:#fff
+}
+
+.admin-row .danger{
+ background:#c94150
+}
+
+.close-admin{
+ width:100%;
+ margin-top:10px
+}
+
+.toast{
+ position:fixed;
+ left:50%;
+ bottom:25px;
+ transform:translateX(-50%);
+ background:#fff;
+ color:#111;
+ padding:12px 18px;
+ border-radius:15px;
+ font-weight:800;
+ z-index:100;
+ box-shadow:0 10px 30px #0008
+}
+
+footer{
+ text-align:center;
+ color:#596577;
+ font-size:11px;
+ margin-top:25px
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= АВТОРИЗАЦИЯ ================= -->
+
+<div id="auth" class="modal">
+
+ <div class="box">
+
+  <h2>🏙️ Построй Империю</h2>
+
+  <div class="tabs">
+
+   <button
+    id="loginTab"
+    class="active"
+    onclick="showLogin()">
+    Войти
+   </button>
+
+   <button
+    id="registerTab"
+    onclick="showRegister()">
+    Регистрация
+   </button>
+
+  </div>
+
+  <div id="registerNickWrap" class="hidden">
+
+   <input
+    id="nickname"
+    maxlength="24"
+    placeholder="Название империи">
+
+  </div>
+
+  <input
+   id="email"
+   type="email"
+   autocomplete="email"
+   placeholder="E-mail">
+
+  <input
+   id="password"
+   type="password"
+   autocomplete="current-password"
+   placeholder="Пароль">
+
+  <div id="authError" class="error"></div>
+
+  <button
+   id="authButton"
+   style="width:100%"
+   onclick="authAction()">
+
+   Войти
+
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- ================= ИГРА ================= -->
+
+<div class="app">
+
+<header>
+
+ <div class="logo" id="logo">
+
+  <h1>🏙️ Построй Империю</h1>
+
+  <div class="sub">
+   Твоя экономика. Твой город.
+  </div>
+
+ </div>
+
+
+ <div class="user">
+
+  <span id="playerName">
+   Загрузка...
+  </span>
+
+  <button
+   class="secondary"
+   onclick="logout()">
+
+   Выйти
+
+  </button>
+
+ </div>
+
+
+ <div class="stats">
+
+  <div class="stat">
+
+   <div class="label">
+    БАЛАНС
+   </div>
+
+   <div
+    class="value"
+    id="money">
+    0 ₽
+   </div>
+
+  </div>
+
+
+  <div class="stat">
+
+   <div class="label">
+    ДОХОД / МИН
+   </div>
+
+   <div
+    class="value"
+    id="income">
+    0 ₽
+   </div>
+
+  </div>
+
+
+  <div class="stat">
+
+   <div class="label">
+    УРОВЕНЬ
+   </div>
+
+   <div
+    class="value"
+    id="level">
+    1
+   </div>
+
+  </div>
+
+
+  <div class="stat">
+
+   <div class="label">
+    XP
+   </div>
+
+   <div
+    class="value"
+    id="xp">
+    0
+   </div>
+
+  </div>
+
+ </div>
+
+</header>
+
+
+<div class="section">
+🏗️ Строительство
+</div>
+
+<div id="buildings"></div>
+
+
+<div class="section">
+🏆 Глобальный рейтинг
+</div>
+
+<div id="leaderboard">
+
+ <div class="card">
+  Загрузка рейтинга...
+ </div>
+
+</div>
+
+
+<footer>
+☁️ Сохранение в облаке · Supabase
+</footer>
+
+</div>
+
+
+<!-- ================= АДМИНКА ================= -->
+
+<div
+ id="admin"
+ class="admin hidden">
+
+ <div class="admin-box">
+
+  <div class="admin-title">
+   🔐 Мод-панель
+  </div>
+
+  <div class="admin-sub">
+   Панель владельца игры
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminAdd(1000)">
+    +1 000 ₽
+   </button>
+
+   <button onclick="adminAdd(100000)">
+    +100 000 ₽
+   </button>
+
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminAdd(1000000)">
+    +1 000 000 ₽
+   </button>
+
+   <button onclick="adminHour()">
+    +1 час дохода
+   </button>
+
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminBuilding('house')">
+    +1 🏠
+   </button>
+
+   <button onclick="adminBuilding('shop')">
+    +1 🏪
+   </button>
+
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminBuilding('gas')">
+    +1 ⛽
+   </button>
+
+   <button onclick="adminBuilding('factory')">
+    +1 🏭
+   </button>
+
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminMultiplier(2)">
+    Доход ×2
+   </button>
+
+   <button onclick="adminMultiplier(5)">
+    Доход ×5
+   </button>
+
+  </div>
+
+
+  <div class="admin-row">
+
+   <button onclick="adminMultiplier(10)">
+    Доход ×10
+   </button>
+
+   <button onclick="adminMultiplier(1)">
+    Доход ×1
+   </button>
+
+  </div>
+
+
+  <button
+   class="danger"
+   style="width:100%;margin-top:8px"
+   onclick="adminReset()">
+
+   🔥 Сбросить мой город
+
+  </button>
+
+
+  <button
+   class="secondary close-admin"
+   onclick="closeAdmin()">
+
+   Закрыть
+
+  </button>
+
+ </div>
+
+</div>
+
+
+<div
+ id="toast"
+ class="toast hidden">
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://xwlwhcghadlwlmfzsxhp.supabase.co";
+
+
+const SUPABASE_URL =
+"https://xwlwhcghadlwlmfzsxhp.supabase.co";
+
+
+const db =
+supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+
+/* =====================================================
+   ИГРОВЫЕ ДАННЫЕ
+===================================================== */
+
+const defs=[
+
+ {
+  key:"house",
+  icon:"🏠",
+  name:"Дом",
+  baseCost:2000,
+  income:100
+ },
+
+ {
+  key:"shop",
+  icon:"🏪",
+  name:"Магазин",
+  baseCost:7500,
+  income:450
+ },
+
+ {
+  key:"gas",
+  icon:"⛽",
+  name:"АЗС",
+  baseCost:20000,
+  income:1200
+ },
+
+ {
+  key:"factory",
+  icon:"🏭",
+  name:"Завод",
+  baseCost:60000,
+  income:4000
+ }
+
+];
+
+
+let player=null;
+
+let isRegister=false;
+
+let saving=false;
+
+let adminPressTimer=null;
+
+
+/* =====================================================
+   ВСПОМОГАТЕЛЬНОЕ
+===================================================== */
+
+function fmt(n){
+
+ return Math.floor(Number(n)||0)
+  .toLocaleString("ru-RU")+" ₽";
+
+}
+
+
+function escapeHtml(text){
+
+ return String(text||"")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+
+}
+
+
+function showToast(text){
+
+ const t=document.getElementById("toast");
+
+ t.textContent=text;
+
+ t.classList.remove("hidden");
+
+ setTimeout(()=>{
+  t.classList.add("hidden");
+ },1800);
+
+}
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+function showLogin(){
+
+ isRegister=false;
+
+ document
+  .getElementById("loginTab")
+  .classList.add("active");
+
+ document
+  .getElementById("registerTab")
+  .classList.remove("active");
+
+ document
+  .getElementById("registerNickWrap")
+  .classList.add("hidden");
+
+ document
+  .getElementById("authButton")
+  .textContent="Войти";
+
+}
+
+
+function showRegister(){
+
+ isRegister=true;
+
+ document
+  .getElementById("registerTab")
+  .classList.add("active");
+
+ document
+  .getElementById("loginTab")
+  .classList.remove("active");
+
+ document
+  .getElementById("registerNickWrap")
+  .classList.remove("hidden");
+
+ document
+  .getElementById("authButton")
+  .textContent="Создать аккаунт";
+
+}
+
+
+async function authAction(){
+
+ const email=
+  document
+   .getElementById("email")
+   .value
+   .trim();
+
+ const password=
+  document
+   .getElementById("password")
+   .value;
+
+ const error=
+  document.getElementById("authError");
+
+ error.textContent="";
+ error.style.color="#ff7180";
+
+
+ if(!email || !password){
+
+  error.textContent=
+   "Заполни e-mail и пароль";
+
+  return;
+
+ }
+
+
+ if(password.length<6){
+
+  error.textContent=
+   "Пароль минимум 6 символов";
+
+  return;
+
+ }
+
+
+ const button=
+  document.getElementById("authButton");
+
+ button.disabled=true;
+
+
+ try{
+
+  if(isRegister){
+
+   const nickname=
+    (
+     document
+      .getElementById("nickname")
+      .value
+      .trim()
+      .slice(0,24)
+    ) || "Моя империя";
+
+
+   const {
+    data,
+    error:e
+   }=
+   await db.auth.signUp({
+
+    email:email,
+
+    password:password,
+
+    options:{
+     data:{
+      nickname:nickname
+     }
+    }
+
+   });
+
+
+   if(e) throw e;
+
+
+   if(!data.user){
+
+    throw new Error(
+     "Не удалось создать аккаунт"
+    );
+
+   }
+
+
+   if(data.session){
+
+    await loadPlayer();
+
+   }else{
+
+    error.style.color="#62e69a";
+
+    error.textContent=
+     "Аккаунт создан. Теперь войди.";
+
+    showLogin();
+
+   }
+
+
+  }else{
+
+
+   const {
+    error:e
+   }=
+   await db.auth.signInWithPassword({
+
+    email:email,
+
+    password:password
+
+   });
+
+
+   if(e) throw e;
+
+
+   await loadPlayer();
+
+  }
+
+
+ }catch(e){
+
+  console.error(e);
+
+  error.textContent=
+   e.message ||
+   "Произошла ошибка";
+
+ }finally{
+
+  button.disabled=false;
+
+ }
+
+}
+
+
+/* =====================================================
+   PLAYER
+===================================================== */
+
+async function loadPlayer(){
+
+ const {
+  data:{
+   user
+  }
+ }=
+ await db.auth.getUser();
+
+
+ if(!user){
+
+  document
+   .getElementById("auth")
+   .classList
+   .remove("hidden");
+
+  return;
+
+ }
+
+
+ const {
+  data,
+  error
+ }=
+ await db
+  .from("players")
+  .select("*")
+  .eq("id",user.id)
+  .single();
+
+
+ if(error){
+
+  console.error(error);
+
+  document
+   .getElementById("authError")
+   .textContent=
+   "Не удалось загрузить город";
+
+  return;
+
+ }
+
+
+ player=data;
+
+
+ document
+  .getElementById("auth")
+  .classList
+  .add("hidden");
+
+
+ applyOfflineIncome();
+
+ render();
+
+ loadLeaderboard();
+
+}
+
+
+async function logout(){
+
+ await db.auth.signOut();
+
+ player=null;
+
+ location.reload();
+
+}
+
+
+/* =====================================================
+   ЭКОНОМИКА
+===================================================== */
+
+function buildingIncome(i){
+
+ const d=defs[i];
+
+ const count=
+  Number(player[d.key])||0;
+
+ const lvl=
+  Number(player[d.key+"_level"])||1;
+
+ return count*d.income*lvl;
+
+}
+
+
+function totalIncome(){
+
+ let income=0;
+
+ defs.forEach((d,i)=>{
+
+  income+=buildingIncome(i);
+
+ });
+
+ return income*
+  (Number(player.multiplier)||1);
+
+}
+
+
+function buildingCost(i){
+
+ const d=defs[i];
+
+ const count=
+  Number(player[d.key])||0;
+
+ return Math.floor(
+  d.baseCost*
+  Math.pow(1.18,count)
+ );
+
+}
+
+
+function getLevel(){
+
+ return 1+
+  Math.floor(
+   (Number(player.xp)||0)/100
+  );
+
+}
+
+
+/* =====================================================
+   ОФЛАЙН-ДОХОД
+===================================================== */
+
+function applyOfflineIncome(){
+
+ if(!player.last_income_at)
+  return;
+
+
+ const last=
+  new Date(
+   player.last_income_at
+  ).getTime();
+
+
+ let minutes=
+  (Date.now()-last)/60000;
+
+
+ minutes=
+  Math.max(
+   0,
+   Math.min(minutes,1440)
+  );
+
+
+ const gain=
+  totalIncome()*minutes;
+
+
+ if(gain>0){
+
+  player.money+=Math.floor(gain);
+
+  player.xp+=Math.floor(
+   minutes
+  );
+
+ }
+
+
+ player.last_income_at=
+  new Date().toISOString();
+
+
+ savePlayer();
+
+}
+
+
+/* =====================================================
+   ПОКУПКА
+===================================================== */
+
+async function buy(i){
+
+ if(!player) return;
+
+
+ const d=defs[i];
+
+ const cost=
+  buildingCost(i);
+
+
+ if(player.money<cost){
+
+  showToast("💸 Не хватает денег");
+
+  return;
+
+ }
+
+
+ player.money-=cost;
+
+ player[d.key]=
+  (Number(player[d.key])||0)+1;
+
+ player.xp+=25;
+
+ render();
+
+ await savePlayer();
+
+ showToast(
+  d.icon+" "+d.name+" построен!"
+ );
+
+}
+
+
+/* =====================================================
+   СОХРАНЕНИЕ
+===================================================== */
+
+async function savePlayer(){
+
+ if(!player || saving)
+  return;
+
+
+ saving=true;
+
+
+ const payload={
+
+  id:player.id,
+
+  nickname:player.nickname,
+
+  money:Math.floor(player.money),
+
+  house:Number(player.house)||0,
+
+  shop:Number(player.shop)||0,
+
+  gas:Number(player.gas)||0,
+
+  factory:Number(player.factory)||0,
+
+  house_level:Number(player.house_level)||1,
+
+  shop_level:Number(player.shop_level)||1,
+
+  gas_level:Number(player.gas_level)||1,
+
+  factory_level:Number(player.factory_level)||1,
+
+  xp:Math.floor(player.xp),
+
+  multiplier:Number(player.multiplier)||1,
+
+  last_income_at:
+   new Date().toISOString(),
+
+  updated_at:
+   new Date().toISOString()
+
+ };
+
+
+ const {
+  error
+ }=
+ await db
+  .from("players")
+  .upsert(
+   payload,
+   {onConflict:"id"}
+  );
+
+
+ if(error)
+  console.error(
+   "SAVE ERROR:",
+   error
+  );
+
+
+ saving=false;
+
+}
+
+
+/* =====================================================
+   ОТРИСОВКА
+===================================================== */
+
+function render(){
+
+ if(!player)
+  return;
+
+
+ document
+  .getElementById("playerName")
+  .textContent=
+  "👤 "+player.nickname;
+
+
+ document
+  .getElementById("money")
+  .textContent=
+  fmt(player.money);
+
+
+ document
+  .getElementById("income")
+  .textContent=
+  fmt(totalIncome());
+
+
+ document
+  .getElementById("level")
+  .textContent=
+  getLevel();
+
+
+ document
+  .getElementById("xp")
+  .textContent=
+  Math.floor(player.xp)
+   .toLocaleString("ru-RU");
+
+
+ document
+  .getElementById("buildings")
+  .innerHTML=
+  defs.map((d,i)=>{
+
+   const count=
+    Number(player[d.key])||0;
+
+   const lvl=
+    Number(player[d.key+"_level"])||1;
+
+   const cost=
+    buildingCost(i);
+
+   const income=
+    buildingIncome(i);
+
+
+   return `
+
+    <div class="card">
+
+     <div class="icon">
+      ${d.icon}
+     </div>
+
+     <div class="info">
+
+      <div class="name">
+       ${d.name} × ${count}
+      </div>
+
+      <div class="desc">
+       Уровень ${lvl} · Следующий ${fmt(cost)}
+      </div>
+
+      <div class="income">
+       +${fmt(income)}/мин
+      </div>
+
+     </div>
+
+     <button
+      onclick="buy(${i})"
+      ${player.money<cost?"disabled":""}>
+
+      Купить
+
+     </button>
+
+    </div>
+
+   `;
+
+  }).join("");
+
+}
+
+
+/* =====================================================
+   РЕЙТИНГ
+===================================================== */
+
+async function loadLeaderboard(){
+
+ const box=
+  document.getElementById(
+   "leaderboard"
+  );
+
+
+ const {
+  data,
+  error
+ }=
+ await db
+  .from("leaderboard")
+  .select(
+   "id,nickname,xp,level"
+  )
+  .order(
+   "xp",
+   {ascending:false}
+  )
+  .limit(50);
+
+
+ if(error){
+
+  console.error(
+   "LEADERBOARD ERROR:",
+   error
+  );
+
+  box.innerHTML=`
+
+   <div class="card">
+    ⚠️ Рейтинг пока недоступен
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ if(!data || !data.length){
+
+  box.innerHTML=`
+
+   <div class="card">
+    Пока игроков нет
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ box.innerHTML=
+  data.map((p,i)=>`
+
+   <div class="rank">
+
+    <div class="rank-left">
+
+     <div class="rank-number">
+      ${i+1}.
+      ${i===0?"👑":i===1?"🥈":i===2?"🥉":"👤"}
+     </div>
+
+     <div class="rank-name">
+      ${escapeHtml(p.nickname)}
+     </div>
+
+    </div>
+
+    <div class="rank-right">
+
+     <div class="rank-level">
+      Уровень ${p.level}
+     </div>
+
+     <div class="rank-xp">
+      ${Math.floor(p.xp)
+       .toLocaleString("ru-RU")} XP
+     </div>
+
+    </div>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+/* =====================================================
+   ИГРОВОЙ ЦИКЛ
+===================================================== */
+
+setInterval(()=>{
+
+ if(!player)
+  return;
+
+
+ player.money+=
+  totalIncome()/60;
+
+
+ player.xp+=0.1;
+
+
+ render();
+
+},1000);
+
+
+setInterval(()=>{
+
+ if(player)
+  savePlayer();
+
+},15000);
+
+
+/* =====================================================
+   АДМИН-ПАНЕЛЬ
+===================================================== */
+
+function openAdmin(){
+
+ const pin=
+  prompt(
+   "🔐 PIN администратора"
+  );
+
+
+ if(pin==="2026"){
+
+  document
+   .getElementById("admin")
+   .classList
+   .remove("hidden");
+
+ }else{
+
+  showToast("❌ Неверный PIN");
+
+ }
+
+}
+
+
+function closeAdmin(){
+
+ document
+  .getElementById("admin")
+  .classList
+  .add("hidden");
+
+}
+
+
+function adminAdd(amount){
+
+ if(!player)
+  return;
+
+ player.money+=amount;
+
+ savePlayer();
+
+ render();
+
+ showToast(
+  "+"+fmt(amount)
+ );
+
+}
+
+
+function adminHour(){
+
+ if(!player)
+  return;
+
+ player.money+=
+  totalIncome()*60;
+
+ player.xp+=60;
+
+ savePlayer();
+
+ render();
+
+ showToast(
+  "🕐 Добавлен 1 час дохода"
+ );
+
+}
+
+
+function adminBuilding(key){
+
+ if(!player)
+  return;
+
+ player[key]=
+  (Number(player[key])||0)+1;
+
+ player.xp+=25;
+
+ savePlayer();
+
+ render();
+
+ showToast(
+  "🏗️ Здание добавлено"
+ );
+
+}
+
+
+function adminMultiplier(value){
+
+ if(!player)
+  return;
+
+ player.multiplier=value;
+
+ savePlayer();
+
+ render();
+
+ showToast(
+  "⚡ Доход ×"+value
+ );
+
+}
+
+
+function adminReset(){
+
+ if(!confirm(
+  "Точно сбросить весь город?"
+ ))
+  return;
+
+
+ player.money=10000;
+
+ player.house=0;
+ player.shop=0;
+ player.gas=0;
+ player.factory=0;
+
+ player.house_level=1;
+ player.shop_level=1;
+ player.gas_level=1;
+ player.factory_level=1;
+
+ player.xp=0;
+ player.multiplier=1;
+
+ savePlayer();
+
+ render();
+
+ closeAdmin();
+
+ showToast(
+  "♻️ Город сброшен"
+ );
+
+}
+
+
+/* =====================================================
+   СКРЫТОЕ ДОЛГОЕ НАЖАТИЕ
+===================================================== */
+
+const logo=
+ document.getElementById("logo");
+
+
+function startAdminPress(){
+
+ clearTimeout(
+  adminPressTimer
+ );
+
+ adminPressTimer=
+  setTimeout(
+   openAdmin,
+   1200
+  );
+
+}
+
+
+function stopAdminPress(){
+
+ clearTimeout(
+  adminPressTimer
+ );
+
+}
+
+
+logo.addEventListener(
+ "touchstart",
+ startAdminPress,
+ {passive:true}
+);
+
+logo.addEventListener(
+ "touchend",
+ stopAdminPress
+);
+
+logo.addEventListener(
+ "touchcancel",
+ stopAdminPress
+);
+
+logo.addEventListener(
+ "mousedown",
+ startAdminPress
+);
+
+logo.addEventListener(
+ "mouseup",
+ stopAdminPress
+);
+
+logo.addEventListener(
+ "mouseleave",
+ stopAdminPress
+);
+
+
+/* =====================================================
+   АВТОРИЗАЦИЯ SUPABASE
+===================================================== */
+
+db.auth.onAuthStateChange(
+ (event,session)=>{
+
+  if(session){
+
+   setTimeout(
+    loadPlayer,
+    100
+   );
+
+  }
+
+ }
+);
+
+
+/* =====================================================
+   СТАРТ
+===================================================== */
+
+loadPlayer();
+
+</script>
+
+</body>
+</html>
