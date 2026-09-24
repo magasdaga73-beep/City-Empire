@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0e13">
+<title>Построй Империю</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#0b0e13;
+ color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.app{
+ max-width:520px;
+ margin:auto;
+ min-height:100vh;
+ padding:18px 14px 40px
+}
+header{
+ background:linear-gradient(135deg,#1b2230,#11151d);
+ border:1px solid #2b3444;
+ border-radius:24px;
+ padding:20px;
+ margin-bottom:14px;
+ box-shadow:0 10px 35px #0006
+}
+.logo{
+ user-select:none;
+ text-align:center;
+ cursor:pointer
+}
+h1{margin:0;font-size:28px}
+.sub{color:#9da8ba;margin-top:5px}
+.stats{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:18px
+}
+.stat{
+ background:#0d1118;
+ border-radius:16px;
+ padding:12px
+}
+.label{
+ font-size:12px;
+ color:#8995a8
+}
+.value{
+ font-size:21px;
+ font-weight:800;
+ margin-top:3px
+}
+.section{
+ font-size:18px;
+ font-weight:800;
+ margin:18px 4px 10px
+}
+.card{
+ background:#141922;
+ border:1px solid #273040;
+ border-radius:20px;
+ padding:15px;
+ margin-bottom:10px;
+ display:flex;
+ gap:12px;
+ align-items:center
+}
+.icon{
+ font-size:34px;
+ width:48px;
+ text-align:center
+}
+.info{flex:1}
+.name{font-weight:800}
+.desc{
+ font-size:12px;
+ color:#8995a8;
+ margin-top:3px
+}
+.income{
+ color:#66e39b;
+ font-size:13px;
+ margin-top:5px
+}
+button{
+ border:0;
+ border-radius:13px;
+ padding:11px 13px;
+ background:#fff;
+ color:#111;
+ font-weight:800;
+ font-size:13px
+}
+button:disabled{opacity:.35}
+footer{
+ text-align:center;
+ color:#657084;
+ font-size:12px;
+ margin-top:20px
+}
+.modal{
+ position:fixed;
+ inset:0;
+ background:#000b;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ z-index:5
+}
+.box{
+ width:min(420px,100%);
+ background:#151a23;
+ border:1px solid #303a4d;
+ border-radius:24px;
+ padding:22px
+}
+input{
+ width:100%;
+ padding:14px;
+ border-radius:14px;
+ border:1px solid #394356;
+ background:#0c1016;
+ color:white;
+ font-size:16px;
+ margin:10px 0
+}
+.admin{
+ position:fixed;
+ inset:0;
+ background:#080a0ecc;
+ z-index:10;
+ padding:20px;
+ display:none;
+ overflow:auto
+}
+.admin .box{margin:auto}
+.row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+ margin:8px 0
+}
+.row button{
+ background:#252e3d;
+ color:#fff
+}
+.danger{
+ background:#c83d4d!important;
+ color:#fff!important
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<div class="logo" id="logo">
+<h1>🏙️ Построй Империю</h1>
+<div class="sub" id="empireName">Твоя экономика. Твой город.</div>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="label">БАЛАНС</div>
+<div class="value" id="money">10 000 ₽</div>
+</div>
+
+<div class="stat">
+<div class="label">ДОХОД / МИН</div>
+<div class="value" id="income">0 ₽</div>
+</div>
+
+<div class="stat">
+<div class="label">УРОВЕНЬ</div>
+<div class="value" id="level">1</div>
+</div>
+
+<div class="stat">
+<div class="label">СОХРАНЕНИЕ</div>
+<div class="value">✓ Авто</div>
+</div>
+
+</div>
+</header>
+
+<div class="section">🏗️ Строительство</div>
+
+<div id="buildings"></div>
+
+<footer>
+Прогресс автоматически сохраняется на этом устройстве.
+</footer>
+
+</div>
+
+
+<!-- Приветствие -->
+
+<div class="modal" id="welcome">
+
+<div class="box">
+
+<h2>Добро пожаловать 👋</h2>
+
+<p class="sub">
+Назови свою империю
+</p>
+
+<input
+id="nick"
+maxlength="24"
+placeholder="Например: Голованов City"
+>
+
+<button
+style="width:100%"
+onclick="startGame()"
+>
+Начать игру
+</button>
+
+</div>
+
+</div>
+
+
+<!-- Админка -->
+
+<div class="admin" id="admin">
+
+<div class="box">
+
+<h2>🔐 Админ-панель</h2>
+
+<p class="sub">
+Панель владельца игры
+</p>
+
+<div class="row">
+<button onclick="addMoney(1000)">
++1 000 ₽
+</button>
+
+<button onclick="addMoney(100000)">
++100 000 ₽
+</button>
+</div>
+
+<div class="row">
+<button onclick="addMoney(1000000)">
++1 000 000 ₽
+</button>
+
+<button onclick="addHour()">
++1 час дохода
+</button>
+</div>
+
+<div class="row">
+<button onclick="freeBuilding(0)">
++1 🏠
+</button>
+
+<button onclick="freeBuilding(1)">
++1 🏪
+</button>
+</div>
+
+<div class="row">
+<button onclick="freeBuilding(2)">
++1 ⛽
+</button>
+
+<button onclick="freeBuilding(3)">
++1 🏭
+</button>
+</div>
+
+<div class="row">
+<button onclick="setMultiplier(2)">
+Доход ×2
+</button>
+
+<button onclick="setMultiplier(5)">
+Доход ×5
+</button>
+</div>
+
+<div class="row">
+<button onclick="setMultiplier(10)">
+Доход ×10
+</button>
+
+<button onclick="setMultiplier(1)">
+Доход ×1
+</button>
+</div>
+
+<button
+class="danger"
+style="width:100%;margin-top:8px"
+onclick="resetGame()"
+>
+Сбросить игру
+</button>
+
+<button
+style="width:100%;margin-top:8px"
+onclick="closeAdmin()"
+>
+Закрыть
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const buildings = [
+
+{
+icon:"🏠",
+name:"Дом",
+cost:2000,
+income:100
+},
+
+{
+icon:"🏪",
+name:"Магазин",
+cost:7500,
+income:450
+},
+
+{
+icon:"⛽",
+name:"АЗС",
+cost:20000,
+income:1200
+},
+
+{
+icon:"🏭",
+name:"Завод",
+cost:60000,
+income:4000
+}
+
+];
+
+
+let game =
+JSON.parse(localStorage.getItem("cityEmpire") || "null")
+||
+{
+money:10000,
+buildings:[0,0,0,0],
+nick:"",
+lastSave:Date.now(),
+multiplier:1
+};
+
+
+function saveGame(){
+
+game.lastSave=Date.now();
+
+localStorage.setItem(
+"cityEmpire",
+JSON.stringify(game)
+);
+
+}
+
+
+function formatMoney(number){
+
+return Math.floor(number)
+.toLocaleString("ru-RU")
++" ₽";
+
+}
+
+
+function getIncome(){
+
+let income=0;
+
+buildings.forEach((building,index)=>{
+
+income +=
+building.income *
+game.buildings[index];
+
+});
+
+return income * game.multiplier;
+
+}
+
+
+function render(){
+
+document.getElementById("money")
+.textContent=formatMoney(game.money);
+
+document.getElementById("income")
+.textContent=formatMoney(getIncome());
+
+let totalBuildings =
+game.buildings.reduce(
+(sum,value)=>sum+value,
+0
+);
+
+document.getElementById("level")
+.textContent=
+1+Math.floor(totalBuildings/3);
+
+
+document.getElementById("empireName")
+.textContent=
+game.nick
+?
+"Империя «"+game.nick+"»"
+:
+"Твоя экономика. Твой город.";
+
+
+document.getElementById("buildings")
+.innerHTML=
+buildings.map((building,index)=>`
+
+<div class="card">
+
+<div class="icon">
+${building.icon}
+</div>
+
+<div class="info">
+
+<div class="name">
+${building.name} × ${game.buildings[index]}
+</div>
+
+<div class="desc">
+Строительство: ${formatMoney(building.cost)}
+</div>
+
+<div class="income">
++${formatMoney(building.income)} / мин
+</div>
+
+</div>
+
+<button
+onclick="buyBuilding(${index})"
+${game.money < building.cost ? "disabled" : ""}
+>
+Построить
+</button>
+
+</div>
+
+`).join("");
+
+}
+
+
+function buyBuilding(index){
+
+let building=buildings[index];
+
+if(game.money >= building.cost){
+
+game.money -= building.cost;
+
+game.buildings[index]++;
+
+saveGame();
+
+render();
+
+}
+
+}
+
+
+function freeBuilding(index){
+
+game.buildings[index]++;
+
+saveGame();
+
+render();
+
+}
+
+
+function addMoney(amount){
+
+game.money += amount;
+
+saveGame();
+
+render();
+
+}
+
+
+function addHour(){
+
+game.money += getIncome()*60;
+
+saveGame();
+
+render();
+
+}
+
+
+function setMultiplier(value){
+
+game.multiplier=value;
+
+saveGame();
+
+render();
+
+}
+
+
+function startGame(){
+
+let nick=
+document.getElementById("nick")
+.value
+.trim();
+
+game.nick=
+nick || "Моя Империя";
+
+saveGame();
+
+document.getElementById("welcome")
+.style.display="none";
+
+render();
+
+}
+
+
+function closeAdmin(){
+
+document.getElementById("admin")
+.style.display="none";
+
+}
+
+
+function resetGame(){
+
+if(confirm("Сбросить весь прогресс?")){
+
+localStorage.removeItem("cityEmpire");
+
+location.reload();
+
+}
+
+}
+
+
+/* Офлайн-доход */
+
+let last=
+Number(game.lastSave) || Date.now();
+
+let elapsed=
+Math.min(
+Date.now()-last,
+86400000
+);
+
+let offlineIncome=
+getIncome() *
+(elapsed/60000);
+
+if(offlineIncome > 0){
+
+game.money += offlineIncome;
+
+saveGame();
+
+}
+
+
+/* Автоматический доход */
+
+setInterval(()=>{
+
+game.money += getIncome()/60;
+
+saveGame();
+
+render();
+
+},1000);
+
+
+render();
+
+
+/* Секретная админка */
+
+let pressTimer;
+
+const logo=
+document.getElementById("logo");
+
+
+function openAdmin(){
+
+let pin=
+prompt("PIN администратора");
+
+if(pin==="2026"){
+
+document.getElementById("admin")
+.style.display="block";
+
+}
+
+}
+
+
+logo.addEventListener(
+"touchstart",
+()=>{
+
+pressTimer=
+setTimeout(openAdmin,1200);
+
+}
+);
+
+
+logo.addEventListener(
+"touchend",
+()=>{
+
+clearTimeout(pressTimer);
+
+}
+);
+
+
+logo.addEventListener(
+"mousedown",
+()=>{
+
+pressTimer=
+setTimeout(openAdmin,1200);
+
+}
+);
+
+
+logo.addEventListener(
+"mouseup",
+()=>{
+
+clearTimeout(pressTimer);
+
+}
+);
+
+</script>
+
+</body>
+</html>
